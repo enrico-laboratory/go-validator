@@ -65,6 +65,7 @@ func Unique(values []string) bool {
 	return len(values) == len(uniqueValues)
 }
 
+// ErrorsToString returns the Errors map as string
 func (v *Validator) ErrorsToString() string {
 	b := new(bytes.Buffer)
 	for key, value := range v.Errors {
