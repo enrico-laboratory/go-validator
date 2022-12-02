@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"fmt"
 	"regexp"
+	"unicode"
 )
 
 var (
-	EmailRX    = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
-	PasswordRX = regexp.MustCompile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")
+	EmailRX = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 )
 
 // Validator defines a new Validator type which contains a map of validation errors.
@@ -73,4 +73,32 @@ func (v *Validator) ErrorsToString() string {
 		fmt.Fprintf(b, "%s=\"%s\"\n", key, value)
 	}
 	return b.String()
+}
+
+// ValidatePassword with minimum amount characters, at least one uppercase letter, one lowercase letter and one numbe
+func ValidatePassword(s string, minimumCharacters int) bool {
+	characterSum := 0
+	number := false
+	upper := false
+	special := false
+	hasMinimumCharacters := false
+	for _, c := range s {
+		characterSum++
+		switch {
+		case unicode.IsNumber(c):
+			number = true
+		case unicode.IsUpper(c):
+			upper = true
+		case unicode.IsPunct(c) || unicode.IsSymbol(c):
+			special = true
+		case unicode.IsLetter(c) || c == ' ':
+		default:
+			return false
+		}
+	}
+	hasMinimumCharacters = characterSum >= minimumCharacters
+	if !number || !upper || !special || !hasMinimumCharacters {
+		return false
+	}
+	return true
 }
