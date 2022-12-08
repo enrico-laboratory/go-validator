@@ -11,10 +11,6 @@ var (
 	EmailRX = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 )
 
-type Errors interface {
-	Error() string
-}
-
 type ErrorMap map[string][]string
 
 // Add adds an error message for a given form field
