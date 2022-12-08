@@ -27,4 +27,9 @@ func TestValidatePasswrd(t *testing.T) {
 		result := ValidatePassword("[a45asdf", 8)
 		assert.False(t, result)
 	})
+
+	t.Run("specific case", func(t *testing.T) {
+		result := ValidatePassword("H^9AdVLjTEF5Tm", 8)
+		assert.True(t, result)
+	})
 }

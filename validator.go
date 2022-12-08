@@ -11,15 +11,19 @@ var (
 	EmailRX = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 )
 
-type Errors map[string][]string
+type Errors interface {
+	Error() string
+}
+
+type ErrorMap map[string][]string
 
 // Add adds an error message for a given form field
-func (e Errors) Add(field, message string) {
+func (e ErrorMap) Add(field, message string) {
 	e[field] = append(e[field], message)
 }
 
 // Get returns first error message for a field
-func (e Errors) Get(field string) string {
+func (e ErrorMap) Get(field string) string {
 	es := e[field]
 	if len(es) == 0 {
 		return ""
@@ -29,23 +33,23 @@ func (e Errors) Get(field string) string {
 
 // Validator defines a new Validator type which contains a map of validation errors.
 type Validator struct {
-	Errors Errors
+	ErrorMap ErrorMap
 }
 
 // New is a helper which creates a new Validator instance with an empty errors map.
 func New() *Validator {
-	return &Validator{Errors: Errors{}}
+	return &Validator{ErrorMap: ErrorMap{}}
 }
 
 // Valid returns true if the errors map doesn't contain any entries.
 func (v *Validator) Valid() bool {
-	return len(v.Errors) == 0
+	return len(v.ErrorMap) == 0
 }
 
 // AddError adds an error message to the map (so long as no entry already exists for the given key).
 func (v *Validator) AddError(key, message string) {
-	if _, exists := v.Errors[key]; !exists {
-		v.Errors.Add(key, message)
+	if _, exists := v.ErrorMap[key]; !exists {
+		v.ErrorMap.Add(key, message)
 	}
 }
 
@@ -82,10 +86,10 @@ func Unique(values []string) bool {
 	return len(values) == len(uniqueValues)
 }
 
-// ErrorsToString returns the Errors map as string
-func (v *Validator) ErrorsToString() string {
+// Error returns the Errors map as string
+func (v *Validator) Error() string {
 	b := new(bytes.Buffer)
-	for key, value := range v.Errors {
+	for key, value := range v.ErrorMap {
 		fmt.Fprintf(b, "%s=\"%s\"\n", key, value)
 	}
 	return b.String()
