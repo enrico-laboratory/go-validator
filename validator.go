@@ -82,6 +82,17 @@ func Unique(values []string) bool {
 	return len(values) == len(uniqueValues)
 }
 
+// UniqueInt returns true if all int values in a slice are unique.
+func UniqueInt(values []int) bool {
+	uniqueValues := make(map[int]bool)
+
+	for _, value := range values {
+		uniqueValues[value] = true
+	}
+
+	return len(values) == len(uniqueValues)
+}
+
 // Error returns the Errors map as string
 func (v *Validator) Error() string {
 	b := new(bytes.Buffer)
